@@ -89,6 +89,11 @@ pacman -Q sudo && usermod -aG wheel,audio,video,optical,storage $INUNAME || exit
 visudo || exit 1
 
 # Check if grub and efibootmgr is installed
-pacman -Q grub && pacman -Q efibootmgr && grub-install /dev/sda --efi-directory=/mnt/efi && grub-mkconfig -o /boot/grub/grub.cfg || exit 1
+printf "Creating mount point and mounting the efi partition...\n"
+mkdir /mnt/efi
+mount /dev/sda1 /mnt/efi &&
+pacman -Q grub && pacman -Q efibootmgr &&
+grub-install /dev/sda --efi-directory=/mnt/efi &&
+grub-mkconfig -o /boot/grub/grub.cfg || exit 1
 
-printf "Setup script complete."
+printf "Setup script complete.\n"
