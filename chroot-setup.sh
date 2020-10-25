@@ -69,7 +69,7 @@ while true; do
 		printf "Are you sure you want to set \"$INNAME\" as your username? (yNe): "
 		read INPUT 
 		if [ "${INPUT,,}" == "y" ]; then
-			useradd $INNAME &&
+			useradd -m $INNAME &&
 			passwd $INNAME &&
 			INUNAME="$INNAME" &&
 			break || exit 1
