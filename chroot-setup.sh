@@ -60,6 +60,13 @@ done
 printf "Enabling networkmanager...\n"
 pacman -Q networkmanager && systemctl enable NetworkManager.service || exit 1
 
+# Enable TLP if it is installed
+printf "Enabling TLP...\n"
+pacman -Q tlp &&
+sed -i 's/#START_CHARGE_THRESH_BAT0=.*/START_CHARGE_THRESH_BAT0=46/g' /etc/pacman.conf &&
+sed -i 's/#STOP_CHARGE_THRESH_BAT0=.*/STOP_CHARGE_THRESH_BAT0=50/g' /etc/pacman.conf
+systemctl enable tlp.service
+
 # Adds a user
 while true; do
 	printf "Enter the name of the user: "
