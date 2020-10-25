@@ -4,21 +4,14 @@
 # IMPORTANT: This script must only be run as root while chrooted
 # Jeremy Andrews Zantua | jeremyzantua@gmail.com
 
-# Set the time zone by creating a symlink
-ln -sf /usr/share/zoneinfo/Asia/Manila /etc/localtime
-
-# Generate /etc/adjtime and sets the hardware clock to the current system time
-hwclock --systohc
-
-# Uncomments en_US.UTF-8 from locale.gen and generates a locale
-sed -i 's/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/g' /etc/locale.gen 
-locale-gen
-printf "LANG=en_US.UTF-8" >> /etc/locale.conf
-
 # Make the colemak layout persistent
-printf "Do you want colemak to be the default keymap? (yN): "
+printf "Do you want colemak to be the default keymap? (yNe): "
 read INPUT
-[ "${INPUT,,}" == y ] && printf "KEYMAP=colemak" >> /etc/vconsole.conf
+if [ "${INPUT,,}" == "y" ]; then
+	printf "KEYMAP=colemak" >> /etc/vconsole.conf || exit 1
+elif [ "${INPUT,,}" == "e" ]; then
+	exit
+fi
 unset INPUT
 
 # Setting the hostname
@@ -27,24 +20,45 @@ while true; do
 	read INNAME
 	# Check if the input is not empty, store the input
 	if [ ! -z "$INNAME" ]; then 
-		printf "Are you sure you want to set \"$INNAME\" as your hostname? (yN): "
+		printf "Are you sure you want to set \"$INNAME\" as your hostname? (yNe): "
 		read INPUT 
 		if [ "${INPUT,,}" == "y" ]; then
-			printf "$INNAME" >> /etc/hostname
-			printf "127.0.0.1\tlocalhost\n::1\t\tlocalhost\n127.0.1.1\t$INNAME.localdomain\t$INNAME" >> /etc/hosts
-			break
+			printf "$INNAME" >> /etc/hostname &&
+			printf "127.0.0.1\tlocalhost\n::1\t\tlocalhost\n127.0.1.1\t$INNAME.localdomain\t$INNAME" >> /etc/hosts &&
+			break || exit 1
+		elif [ "${INPUT,,}" == "e" ]; then
+			exit
 		fi
 	else
 		printf "ERROR: The hostname cannot be blank!\n"
 	fi
 done
+unset INPUT
+
+# Set the time zone by creating a symlink
+printf "Setting the time zone to Asia/Manila...\n"
+ln -sf /usr/share/zoneinfo/Asia/Manila /etc/localtime || exit 1
+
+# Generate /etc/adjtime and sets the hardware clock to the current system time
+printf "Setting the hardware clock to match the system clock...\n"
+hwclock --systohc || exit 1
+
+# Uncomments en_US.UTF-8 from locale.gen and generates a locale
+printf "Uncommenting \'en_US.UTF-8 UTF-8\' from locale.gen...\n"
+sed -i 's/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/g' /etc/locale.gen &&
+locale-gen &&
+printf "LANG=en_US.UTF-8" >> /etc/locale.conf || exit 1
 
 # Set the root password
-passwd
+printf "Set the root password. You have 3 attempts.\n"
+for i in {1..3}
+do
+	passwd && break || exit
+done
 
 # Enable networkmanager if it is installed
 printf "Enabling networkmanager...\n"
-pacman -Q networkmanager && systemctl enable NetworkManager.service
+pacman -Q networkmanager && systemctl enable NetworkManager.service || exit 1
 
 # Adds a user
 while true; do
@@ -52,13 +66,15 @@ while true; do
 	read INNAME
 	# Check if the input is not empty, store the input
 	if [ ! -z "$INNAME" ]; then 
-		printf "Are you sure you want to set \"$INNAME\" as your username? (yN): "
+		printf "Are you sure you want to set \"$INNAME\" as your username? (yNe): "
 		read INPUT 
 		if [ "${INPUT,,}" == "y" ]; then
-			useradd $INNAME
-			passwd $INNAME
-			INUNAME="$INNAME"
-			break
+			useradd $INNAME &&
+			passwd $INNAME &&
+			INUNAME="$INNAME" &&
+			break || exit 1
+		elif [ "${INPUT,,}" == "e" ]; then
+			exit
 		fi
 	else
 		printf "ERROR: The username cannot be blank!\n"
@@ -67,15 +83,12 @@ done
 
 # Check if sudo is installed and add the user to groups
 printf "Adding $INUNAME to groups...\n"
-pacman -Q sudo && usermod -aG wheel,audio,video,optical,storage $INUNAME
+pacman -Q sudo && usermod -aG wheel,audio,video,optical,storage $INUNAME || exit 1
 
 # Edit the sudoers file
-visudo
+visudo || exit 1
 
 # Check if grub and efibootmgr is installed
-pacman -Q grub && pacman -Q efibootmgr && grub-install /dev/sda --efi-directory=/mnt/efi && grub-mkconfig -o /boot/grub/grub.cfg
+pacman -Q grub && pacman -Q efibootmgr && grub-install /dev/sda --efi-directory=/mnt/efi && grub-mkconfig -o /boot/grub/grub.cfg || exit 1
 
 printf "Setup script complete."
-
-
-
