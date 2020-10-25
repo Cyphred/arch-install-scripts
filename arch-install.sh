@@ -12,7 +12,7 @@ printf "Creating a mirrorlist using the mirrors from the nearest countries...\n"
 reflector --country Philippines --country 'Hong Kong' --country Taiwan --country Japan --country Singapore --country Indonesia --save /etc/pacman.d/mirrorlist || exit 1
 
 printf "Installing linux and essential packages...\n"
-pacstrap /mnt base linux linux-firmware networkmanager base-devel git vim sudo grub efibootmgr wget htop tmux openssh ranger || exit 1
+pacstrap /mnt base linux linux-firmware networkmanager base-devel git vim sudo grub efibootmgr wget htop tmux openssh ranger tlp acpi_call || exit 1
 
 printf "Creating an fstab file...\n"
 genfstab -U /mnt >> /mnt/etc/fstab || exit 1
