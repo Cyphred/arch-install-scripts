@@ -12,7 +12,7 @@ printf "Creating a mirrorlist using the mirrors from the nearest countries...\n"
 reflector --country Philippines --country 'Hong Kong' --country Taiwan --country Japan --country Singapore --country Indonesia --save /etc/pacman.d/mirrorlist || exit 1
 
 printf "Installing linux and essential packages...\n"
-pacstrap /mnt base linux linux-firmware networkmanager base-devel git vim sudo grub efibootmgr wget htop tmux openssh ranger tlp acpi_call man ntfs-3g libxft xorg-server xorg-xinit xorg-xrandr xorg-xsetroot xorg-xbacklight picom feh libxft libxinerama noto-fonts noto-fonts-cjk noto-fonts-emoji pulseaudio pavucontrol ||
+pacstrap /mnt base linux linux-firmware networkmanager base-devel git vim sudo grub efibootmgr wget htop tmux openssh ranger tlp acpi_call man ntfs-3g libxft xorg-server xorg-xinit xorg-xrandr xorg-xsetroot xorg-xbacklight picom feh libxft libxinerama noto-fonts noto-fonts-cjk noto-fonts-emoji pulseaudio pavucontrol scrot ||
 exit 1
 
 printf "Creating an fstab file...\n"
