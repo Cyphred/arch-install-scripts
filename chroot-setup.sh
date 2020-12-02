@@ -60,6 +60,9 @@ done
 printf "Enabling networkmanager...\n"
 pacman -Q networkmanager && systemctl enable NetworkManager.service || exit 1
 
+# Enable acpi and acpid if they are installed
+pacman -Q acpi && pacman -Q acpid && systemctl enable acpid.service
+
 # Enable TLP if it is installed
 printf "Enabling TLP...\n"
 pacman -Q tlp &&
