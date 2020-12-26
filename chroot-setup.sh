@@ -106,6 +106,12 @@ pacman -Q grub && pacman -Q efibootmgr &&
 grub-install /dev/sda --efi-directory=/mnt/efi &&
 grub-mkconfig -o /boot/grub/grub.cfg || exit 1
 
+# Modifies pacman to my preferred settings
+printf "Modifying pacman.conf...\n"
+sed -i 's/#Color/Color/g' /etc/pacman.conf &&
+sed -i 's/#TotalDownload/TotalDownload/g' /etc/pacman.conf &&
+sed -i 's/#VerbosePkgLists/VerbosePkgLists/g' /etc/pacman.conf || exit 1
+
 # Installing vimplug for vim
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
