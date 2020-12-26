@@ -106,4 +106,8 @@ pacman -Q grub && pacman -Q efibootmgr &&
 grub-install /dev/sda --efi-directory=/mnt/efi &&
 grub-mkconfig -o /boot/grub/grub.cfg || exit 1
 
+# Installing vimplug for vim
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
 printf "Setup script complete.\n"
