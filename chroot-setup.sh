@@ -43,6 +43,9 @@ ln -sf /usr/share/zoneinfo/Asia/Manila /etc/localtime || exit 1
 printf "Setting the hardware clock to match the system clock...\n"
 hwclock --systohc || exit 1
 
+# Set clock to local time to avoid conflict with windows when dual booting
+timedatectl set-local-rtc 1 --adjust-system-clock
+
 # Uncomments en_US.UTF-8 from locale.gen and generates a locale
 printf "Uncommenting \'en_US.UTF-8 UTF-8\' from locale.gen...\n"
 sed -i 's/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/g' /etc/locale.gen &&
@@ -115,5 +118,10 @@ sed -i 's/#VerbosePkgLists/VerbosePkgLists/g' /etc/pacman.conf || exit 1
 # Installing vimplug for vim
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+# Installing wireless tools
+printf "Do you plan on using wireless? (yN): "
+read input
+[ "$INPUT" == "y" ] && pacman -S wireless_tools
 
 printf "Setup script complete.\n"
