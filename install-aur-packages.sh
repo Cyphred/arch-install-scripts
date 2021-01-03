@@ -4,6 +4,7 @@
 installPackages() {
 	yay bashmount
 	yay tremc
+	yay libxft-bgra
 }
 
 [ -d "$HOME/packages" ] || mkdir $HOME/packages/
